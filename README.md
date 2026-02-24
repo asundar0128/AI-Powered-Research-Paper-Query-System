@@ -33,6 +33,18 @@ cd ResearchPapersQuery/pubmed_fetcher_project
 # Install dependencies
 poetry install
 ```
+## System Architecture 
+
+```mermaid
+graph TD
+    A[User Query] --> B[Entrez Search Engine]
+    B --> C{XML Parsing Layer}
+    C --> D[Email & Affiliation Extraction]
+    D --> E{Semantic Filtering Heuristic}
+    E -->|Industry Match| F[CSV Formatter]
+    E -->|Academic/Ignore| G[Discard]
+    F --> H[Final CSV Output]
+```
 
 ## Technical Challenges & Solutions
 
