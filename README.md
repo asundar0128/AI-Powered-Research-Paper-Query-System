@@ -34,5 +34,47 @@ cd ResearchPapersQuery/pubmed_fetcher_project
 poetry install
 ```
 
+## Technical Challenges & Solutions
+
+## 1. The "Academic vs. Pharma" Heuristic
+**Challenge:** PubMed affiliation strings are unstructured. A search for "Pfizer" might return "Pfizer-University of Berlin," making it difficult to isolate purely corporate research.
+**Solution:** I implemented a filtering logic that prioritizes specific keywords (e.g., `Inc`, `Ltd`, `Pharma`, `Biotech`) while cross-referencing against a "blacklist" of academic identifiers (e.g., `University`, `Hospital`, `Institute`).
+
+## 2. Handling API Rate Limiting
+**Challenge:** The NCBI Entrez API is sensitive to high-frequency requests, often leading to `429 Too Many Requests` errors.
+**Solution:** The system uses a throttled batch-fetching approach, ensuring compliance with NCBI's usage policies while maintaining high throughput for large datasets.
+
+## 3. Non-Standard Email Extraction
+**Challenge:** Corresponding emails are not always in a dedicated metadata field; they are often buried at the end of long affiliation strings.
+**Solution:** Built a robust Regex-based extraction layer that identifies and validates email patterns specifically associated with the lead author's affiliation.
+
 ## Usage
 
+## Standard Query
+
+Execute a targeted search for corporate-affiliated papers in drug development:
+
+poetry run get-papers-list "(pharmaceutical OR biotech OR life sciences) AND affiliation[Affiliation]" -f industry_report.csv
+
+## Debug & Validation Mode
+
+Visually inspect the reasoning and log output in real-time:
+
+poetry run get-papers-list "pharma AND affiliation[Affiliation]" -d
+
+## Sample Output
+
+The tool generates a structured CSV, optimized for downstream RAG (Retrieval-Augmented Generation) applications or business analysis:
+
+PubmedID,Title,Publication Date,Company Affiliation(s),Corresponding Email
+40334840,Colistin-resistant Klebsiella pneumoniae...,2025 Jun,[Detected Corporate Entity],ulises.garza@insp.mx
+
+## Future Roadmap
+
+- LLM Summarization: Integrate an Agentic layer to summarize the "Business Impact" of fetched papers.
+- Knowledge Graph: Map co-authorship between startups and Big Pharma.
+- Async Fetching: Implement asyncio for high-volume batch processing.
+
+## License
+
+This project is open-source and licensed under the MIT License.
